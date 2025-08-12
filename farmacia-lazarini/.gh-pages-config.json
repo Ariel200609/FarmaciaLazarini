@@ -1,0 +1,7 @@
+{
+  "base": "/FarmaciaLazarini/",
+  "branch": "gh-pages",
+  "dist": "dist",
+  "message": "Deploy to GitHub Pages",
+  "dotfiles": true
+}
