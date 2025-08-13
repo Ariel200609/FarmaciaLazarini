@@ -18,6 +18,10 @@ export interface Branch {
   phone: string;
   hours: string;
   mapUrl: string;
+  coordinates: {
+    lat: number;
+    lng: number;
+  };
   apiUrl: string;
 }
 

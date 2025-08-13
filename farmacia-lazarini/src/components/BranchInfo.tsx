@@ -1,164 +1,159 @@
 import { motion } from 'framer-motion';
-import { MapPin, Phone, Clock, Mail, Navigation, Star } from 'lucide-react';
+import { MapPin, Phone, Clock, Instagram, MessageCircle } from 'lucide-react';
 import { Branch } from '../types';
+import { CONTACT_INFO } from '../config/branches';
 
 interface BranchInfoProps {
   branch: Branch;
 }
 
 export const BranchInfo: React.FC<BranchInfoProps> = ({ branch }) => {
-  const features = [
-    {
-      icon: Star,
-      title: 'Atención Personalizada',
-      description: 'Farmacéuticos expertos para asesorarte'
-    },
-    {
-      icon: Clock,
-      title: 'Horarios Extendidos',
-      description: 'Abierto de lunes a domingo'
-    },
-    {
-      icon: Navigation,
-      title: 'Ubicación Céntrica',
-      description: 'Fácil acceso y estacionamiento'
-    }
-  ];
+  const handleMapClick = () => {
+    window.open(branch.mapUrl, '_blank');
+  };
+
+  const handleWhatsAppClick = () => {
+    const message = `Hola! Me gustaría obtener información sobre la sucursal de ${branch.name}
+
+Dirección: ${branch.address}
+
+¿Podrían darme más detalles sobre horarios y servicios?
+
+Gracias! 🏥`;
+    
+    const whatsappUrl = `https://wa.me/${CONTACT_INFO.whatsapp}?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+  };
+
+  const handleInstagramClick = () => {
+    window.open(CONTACT_INFO.instagramUrl, '_blank');
+  };
 
   return (
-    <section className="bg-gray-50 py-16">
+    <section className="py-16 bg-gradient-to-br from-gray-50 to-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-12"
         >
-          <h2 className="section-title">
-            Sucursal{' '}
-            <span className="gradient-text">{branch.name}</span>
+          <h2 className="section-title mb-4">
+            Información de la Sucursal <span className="gradient-text">{branch.name}</span>
           </h2>
-          <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-            Visítanos y descubre por qué somos la farmacia de confianza en la zona.
+          <p className="text-gray-600 max-w-2xl mx-auto">
+            Encuentra nuestra sucursal y contáctanos para cualquier consulta sobre productos, 
+            horarios o servicios especiales.
           </p>
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Información de contacto */}
           <motion.div
-            initial={{ opacity: 0, x: -50 }}
+            initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6 }}
-            className="space-y-6"
+            transition={{ delay: 0.2 }}
+            className="space-y-8"
           >
-            <div className="bg-white rounded-2xl p-8 shadow-lg">
-              <h3 className="text-2xl font-bold text-gray-900 mb-6">
-                Información de Contacto
-              </h3>
-              
-              <div className="space-y-4">
-                <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-lazarini-green/10 rounded-full flex items-center justify-center flex-shrink-0">
-                    <MapPin className="w-6 h-6 text-lazarini-green" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-900">Dirección</h4>
-                    <p className="text-gray-600">{branch.address}</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-lazarini-blue/10 rounded-full flex items-center justify-center flex-shrink-0">
-                    <Phone className="w-6 h-6 text-lazarini-blue" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-900">Teléfono</h4>
-                    <p className="text-gray-600">{branch.phone}</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-lazarini-teal/10 rounded-full flex items-center justify-center flex-shrink-0">
-                    <Clock className="w-6 h-6 text-lazarini-teal" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-900">Horarios</h4>
-                    <p className="text-gray-600">{branch.hours}</p>
-                  </div>
-                </div>
+            {/* Dirección */}
+            <div className="flex items-start space-x-4">
+              <div className="w-12 h-12 bg-lazarini-blue/10 rounded-full flex items-center justify-center flex-shrink-0">
+                <MapPin className="w-6 h-6 text-lazarini-blue" />
               </div>
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Dirección</h3>
+                <p className="text-gray-600 leading-relaxed">{branch.address}</p>
+                <button
+                  onClick={handleMapClick}
+                  className="text-lazarini-blue hover:text-lazarini-teal font-medium mt-2 transition-colors"
+                >
+                  Ver en Google Maps →
+                </button>
+              </div>
+            </div>
 
-              <div className="mt-8 pt-6 border-t border-gray-200">
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <button className="btn-primary flex-1">
-                    <Phone className="w-4 h-4 mr-2" />
-                    Llamar Ahora
-                  </button>
-                  <button className="btn-secondary flex-1">
-                    <Mail className="w-4 h-4 mr-2" />
-                    Enviar Email
-                  </button>
-                </div>
+            {/* Teléfono */}
+            <div className="flex items-start space-x-4">
+              <div className="w-12 h-12 bg-lazarini-green/10 rounded-full flex items-center justify-center flex-shrink-0">
+                <Phone className="w-6 h-6 text-lazarini-green" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">WhatsApp</h3>
+                <p className="text-gray-600 mb-3">{CONTACT_INFO.whatsapp}</p>
+                <button
+                  onClick={handleWhatsAppClick}
+                  className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2"
+                >
+                  <MessageCircle className="w-4 h-4" />
+                  <span>Enviar Mensaje</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Horarios */}
+            <div className="flex items-start space-x-4">
+              <div className="w-12 h-12 bg-lazarini-teal/10 rounded-full flex items-center justify-center flex-shrink-0">
+                <Clock className="w-6 h-6 text-lazarini-teal" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Horarios de Atención</h3>
+                <p className="text-gray-600 leading-relaxed">{branch.hours}</p>
+              </div>
+            </div>
+
+            {/* Instagram */}
+            <div className="flex items-start space-x-4">
+              <div className="w-12 h-12 bg-pink-500/10 rounded-full flex items-center justify-center flex-shrink-0">
+                <Instagram className="w-6 h-6 text-pink-500" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Síguenos</h3>
+                <p className="text-gray-600 mb-3">{CONTACT_INFO.instagram}</p>
+                <button
+                  onClick={handleInstagramClick}
+                  className="bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2"
+                >
+                  <Instagram className="w-4 h-4" />
+                  <span>Ver Instagram</span>
+                </button>
               </div>
             </div>
           </motion.div>
 
-          {/* Mapa y características */}
+          {/* Mapa */}
           <motion.div
-            initial={{ opacity: 0, x: 50 }}
+            initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="space-y-6"
+            transition={{ delay: 0.4 }}
+            className="relative"
           >
-            {/* Mapa */}
-            <div className="bg-white rounded-2xl p-6 shadow-lg">
-              <h3 className="text-xl font-bold text-gray-900 mb-4">
-                Ubicación
-              </h3>
-              <div className="aspect-video bg-gray-200 rounded-lg overflow-hidden">
-                <iframe
-                  src={branch.mapUrl}
-                  width="100%"
-                  height="100%"
-                  style={{ border: 0 }}
-                  allowFullScreen
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                  title={`Mapa de ${branch.name}`}
-                />
-              </div>
-              <div className="mt-4 text-center">
-                <a
-                  href={branch.mapUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-lazarini-blue hover:text-lazarini-teal font-medium text-sm"
-                >
-                  Ver en Google Maps →
-                </a>
-              </div>
+            <div className="bg-gray-200 rounded-2xl overflow-hidden shadow-xl h-96">
+              <iframe
+                src={`https://maps.google.com/maps?q=${branch.coordinates.lat},${branch.coordinates.lng}&hl=es&z=15&output=embed`}
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title={`Ubicación de ${branch.name}`}
+              />
             </div>
-
-            {/* Características */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {features.map((feature, index) => (
-                <motion.div
-                  key={feature.title}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.4 + index * 0.1 }}
-                  className="bg-white rounded-xl p-4 shadow-lg text-center"
-                >
-                  <div className="w-12 h-12 bg-lazarini-green/10 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <feature.icon className="w-6 h-6 text-lazarini-green" />
-                  </div>
-                  <h4 className="font-semibold text-gray-900 text-sm mb-1">
-                    {feature.title}
-                  </h4>
-                  <p className="text-gray-600 text-xs">
-                    {feature.description}
-                  </p>
-                </motion.div>
-              ))}
+            
+            {/* Overlay con información */}
+            <div className="absolute bottom-4 left-4 right-4 bg-white rounded-lg p-4 shadow-lg">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 rounded-full overflow-hidden bg-white shadow-md flex items-center justify-center">
+                  <img 
+                    src="/logo.webp" 
+                    alt="Farmacia Lazarini Logo" 
+                    className="w-full h-full object-cover rounded-full"
+                  />
+                </div>
+                <div>
+                  <h4 className="font-semibold text-gray-900">{branch.name}</h4>
+                  <p className="text-sm text-gray-600">{branch.address}</p>
+                </div>
+              </div>
             </div>
           </motion.div>
         </div>

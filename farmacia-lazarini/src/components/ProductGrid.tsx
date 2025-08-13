@@ -1,7 +1,8 @@
 import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useMemo } from 'react';
 import { ProductCard } from './ProductCard';
 import { Product } from '../types';
-import { Loader2, Package, AlertCircle } from 'lucide-react';
+import { Loader2, Package, AlertCircle, Search, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface ProductGridProps {
   products: Product[];
@@ -10,12 +11,39 @@ interface ProductGridProps {
   branchName: string;
 }
 
+const PRODUCTS_PER_PAGE = 12; // 12 productos por página
+
 export const ProductGrid: React.FC<ProductGridProps> = ({ 
   products, 
   isLoading, 
   error, 
   branchName 
 }) => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // Filtrar productos por búsqueda
+  const filteredProducts = useMemo(() => {
+    if (!searchTerm) return products;
+    
+    return products.filter(product => 
+      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.category?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [products, searchTerm]);
+
+  // Calcular productos para la página actual
+  const totalPages = Math.ceil(filteredProducts.length / PRODUCTS_PER_PAGE);
+  const startIndex = (currentPage - 1) * PRODUCTS_PER_PAGE;
+  const currentProducts = filteredProducts.slice(startIndex, startIndex + PRODUCTS_PER_PAGE);
+
+  // Resetear página cuando cambia la búsqueda
+  const handleSearch = (value: string) => {
+    setSearchTerm(value);
+    setCurrentPage(1);
+  };
+
   if (isLoading) {
     return (
       <motion.div
@@ -49,7 +77,7 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
     );
   }
 
-  if (products.length === 0) {
+  if (filteredProducts.length === 0) {
     return (
       <motion.div
         initial={{ opacity: 0 }}
@@ -57,11 +85,23 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
         className="flex flex-col items-center justify-center py-20"
       >
         <Package className="w-16 h-16 text-gray-400 mb-4" />
-        <h3 className="text-xl font-semibold text-gray-900 mb-2">No hay productos disponibles</h3>
+        <h3 className="text-xl font-semibold text-gray-900 mb-2">
+          {searchTerm ? 'No se encontraron productos' : 'No hay productos disponibles'}
+        </h3>
         <p className="text-gray-600 text-center max-w-md">
-          Actualmente no hay productos promocionales en {branchName}. 
-          Vuelve más tarde o contacta directamente con la farmacia.
+          {searchTerm 
+            ? `No hay productos que coincidan con "${searchTerm}"`
+            : `Actualmente no hay productos promocionales en ${branchName}. Vuelve más tarde o contacta directamente con la farmacia.`
+          }
         </p>
+        {searchTerm && (
+          <button 
+            onClick={() => handleSearch('')}
+            className="mt-4 btn-secondary"
+          >
+            Limpiar búsqueda
+          </button>
+        )}
       </motion.div>
     );
   }
@@ -84,18 +124,80 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
         </p>
       </motion.div>
 
+      {/* Barra de búsqueda */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+        className="mb-8"
+      >
+        <div className="max-w-md mx-auto relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+          <input
+            type="text"
+            placeholder="Buscar productos..."
+            value={searchTerm}
+            onChange={(e) => handleSearch(e.target.value)}
+            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-lazarini-green focus:border-transparent"
+          />
+        </div>
+      </motion.div>
+
+      {/* Información de resultados */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+        className="text-center mb-6"
+      >
+        <p className="text-gray-600">
+          Mostrando {startIndex + 1}-{Math.min(startIndex + PRODUCTS_PER_PAGE, filteredProducts.length)} de {filteredProducts.length} productos
+        </p>
+      </motion.div>
+
       {/* Grid de productos */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         <AnimatePresence mode="wait">
-          {products.map((product, index) => (
+          {currentProducts.map((product, index) => (
             <ProductCard
-              key={`${product.id}-${branchName}`}
+              key={`${product.id}-${branchName}-${currentPage}`}
               product={product}
               index={index}
+              branchName={branchName}
             />
           ))}
         </AnimatePresence>
       </div>
+
+      {/* Paginación */}
+      {totalPages > 1 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="flex justify-center items-center space-x-2 mt-12"
+        >
+          <button
+            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+            className="p-2 rounded-lg border border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+          
+          <span className="px-4 py-2 text-gray-600">
+            Página {currentPage} de {totalPages}
+          </span>
+          
+          <button
+            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+            disabled={currentPage === totalPages}
+            className="p-2 rounded-lg border border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+          >
+            <ChevronRight className="w-5 h-5" />
+          </button>
+        </motion.div>
+      )}
 
       {/* Información adicional */}
       <motion.div
