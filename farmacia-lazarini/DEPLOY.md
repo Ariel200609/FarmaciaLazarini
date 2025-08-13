@@ -1,48 +1,65 @@
-# Instrucciones para Deploy en GitHub Pages
+# 🚀 Deploy a GitHub Pages
 
-## Configuración Inicial
+## Configuración Automática (Recomendado)
 
-1. **Asegúrate de que tu repositorio se llame exactamente `FarmaciaLazarini`**
-2. **Habilita GitHub Pages en tu repositorio:**
-   - Ve a Settings > Pages
-   - Source: Deploy from a branch
-   - Branch: gh-pages
-   - Folder: / (root)
+### 1. Habilitar GitHub Pages
+1. Ve a tu repositorio en GitHub
+2. Ve a **Settings** → **Pages**
+3. En **Source**, selecciona **GitHub Actions**
+4. Guarda la configuración
 
-## Pasos para Deploy
+### 2. Hacer Push del Código
+```bash
+git add .
+git commit -m "Configuración para GitHub Pages"
+git push origin main
+```
 
-1. **Instala las dependencias:**
-   ```bash
-   npm install
-   ```
+### 3. Verificar el Deploy
+- Ve a la pestaña **Actions** en tu repositorio
+- El workflow se ejecutará automáticamente
+- Una vez completado, tu sitio estará disponible en:
+  `https://ariel200609.github.io/FarmaciaLazarini/`
 
-2. **Construye el proyecto:**
-   ```bash
-   npm run build
-   ```
+## Configuración Manual (Alternativa)
 
-3. **Despliega a GitHub Pages:**
-   ```bash
-   npm run deploy
-   ```
+Si prefieres hacer el deploy manualmente:
 
-## Verificación
+```bash
+# Instalar dependencias
+npm install
 
-- El deploy puede tomar unos minutos
-- Verifica que la URL sea: `https://tu-usuario.github.io/FarmaciaLazarini/`
-- Si ves una página en blanco, espera unos minutos y recarga
+# Hacer build
+npm run build
+
+# Deploy con gh-pages
+npm run deploy
+```
+
+## Estructura de URLs
+
+Tu aplicación está configurada para funcionar en:
+- **Desarrollo**: `http://localhost:3000/`
+- **Producción**: `https://ariel200609.github.io/FarmaciaLazarini/`
+
+## Rutas Disponibles
+
+- `/` - Página principal
+- `/bonifacio` - Sucursal Bonifacio
+- `/guamini` - Sucursal Guamini
 
 ## Solución de Problemas
 
-### Página en Blanco
-- Verifica que el repositorio se llame exactamente `FarmaciaLazarini`
-- Asegúrate de que GitHub Pages esté configurado en la rama `gh-pages`
-- Espera 5-10 minutos después del deploy
+### Error 404 en GitHub Pages
+- Verifica que el `base` en `vite.config.ts` sea `/FarmaciaLazarini/`
+- Asegúrate de que la rama `gh-pages` se haya creado correctamente
 
-### Errores de Rutas
-- El archivo `404.html` maneja las rutas de React Router
-- El script en `index.html` restaura las URLs correctas
+### Rutas no funcionan
+- Verifica que estés accediendo desde la URL correcta con `/FarmaciaLazarini/`
+- Las rutas relativas deben funcionar correctamente
 
-### Errores de Build
-- Ejecuta `npm run build` localmente para ver errores
-- Verifica que TypeScript compile sin errores
+## Notas Importantes
+
+- El deploy automático se ejecuta cada vez que haces push a `main`
+- Los cambios pueden tardar unos minutos en estar disponibles
+- Verifica siempre que el build sea exitoso en la pestaña Actions
