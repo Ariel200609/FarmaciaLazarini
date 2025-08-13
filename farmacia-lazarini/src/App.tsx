@@ -4,7 +4,7 @@ import './App.css';
 
 function App() {
   return (
-    <Router>
+    <Router basename="/FarmaciaLazarini">
       <div className="App">
         <Routes>
           <Route path="/" element={<HomePage />} />
